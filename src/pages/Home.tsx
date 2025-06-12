@@ -30,7 +30,7 @@ const Home: React.FC = () => {
 
   return (
     <div
-      className={`flex flex-col items-center justify-center h-full px-4 pt-[30dvh]
+      className={`flex flex-col items-center justify-center min-h-screen px-4 pt-32
         ${darkMode ? "bg-gray-800 text-white" : "bg-gray-50 text-gray-900"}`}
     >
       <h2 className="text-2xl font-semibold text-center mb-4 tracking-tight">
