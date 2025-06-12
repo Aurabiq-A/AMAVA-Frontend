@@ -34,7 +34,7 @@ const Home: React.FC = () => {
         ${darkMode ? "bg-gray-800 text-white" : "bg-gray-50 text-gray-900"}`}
     >
       <h2 className="text-2xl font-semibold text-center mb-4 tracking-tight">
-        Find Winning Products 🔥
+        Let Her Find Winning Products For You🔥
       </h2>
       {/*<p
         className={`text-center mb-10 text-lg max-w-xl ${
