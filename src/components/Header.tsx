@@ -1,3 +1,4 @@
+// filepath: /workspaces/AMAVA-Frontend/src/components/Header.tsx
 import React from "react";
 import { SunIcon, MoonIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../context/ThemeContext"; // adjust path
@@ -6,7 +7,7 @@ const Header: React.FC = () => {
   const { darkMode, toggleDarkMode } = useTheme();
 
   return (
-    <header className="absolue inset-0 z-30 w-full px-4 py-3 flex items-center justify-between bg-gray-300 dark:bg-gray-800 shadow-md">
+    <header className="absolute inset-0 z-30 w-full px-4 py-3 flex items-center justify-between bg-gray-300 dark:bg-gray-800 shadow-md">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-wide max-sm:text-lg">
         AMAVA
       </h1>

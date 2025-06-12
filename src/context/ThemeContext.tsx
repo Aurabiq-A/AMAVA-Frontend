@@ -1,3 +1,4 @@
+// filepath: /workspaces/AMAVA-Frontend/src/context/ThemeContext.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface ThemeContextType {
@@ -8,7 +9,6 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Initialize state from localStorage or system preference
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     const saved = localStorage.getItem("theme");
     if (saved) return saved === "dark";
@@ -25,10 +25,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       localStorage.setItem("theme", "light");
     }
 
-    // Listen for changes in system preference
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent) => {
-      // Only update if user hasn't set a preference manually
       if (!localStorage.getItem("theme")) {
         setDarkMode(e.matches);
       }
@@ -46,7 +44,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
-// Custom hook for consuming context
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
   if (!context) {
