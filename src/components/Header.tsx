@@ -15,23 +15,9 @@ const Header: React.FC = () => {
         AMAVA
       </h1>
       <div className="flex items-center space-x-4">
-        <button
-          aria-label="Toggle Dark Mode"
-          onClick={toggleDarkMode}
-          className={`p-2 rounded-full transition
-            ${darkMode
-              ? "bg-gray-700 hover:bg-gray-600 text-yellow-400"
-              : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-            }`}
-        >
-          {darkMode ? (
-            <SunIcon className="h-6 w-6" />
-          ) : (
-            <MoonIcon className="h-6 w-6" />
-          )}
-        </button>
-        <label className="theme-switch">
-          <input type="checkbox" className="theme-switch__checkbox"></input>
+        <button>
+          <label className="theme-switch"  >
+            <input type="checkbox" className="theme-switch__checkbox" onClick={toggleDarkMode}></input>
             <div className="theme-switch__container">
               <div className="theme-switch__clouds"></div>
               <div className="theme-switch__stars-container">
@@ -49,7 +35,8 @@ const Header: React.FC = () => {
                 </div>
               </div>
             </div>
-        </label>
+          </label>
+        </button>
         <button
           aria-label="User Profile"
           className={`p-2 rounded-full transition

@@ -1,5 +1,5 @@
 .theme-switch {
-  --toggle-size: 30px;
+  --toggle-size: 20px;
   /* the size is adjusted using font-size,
      this is not transform scale,
      so you can choose any size */
@@ -55,8 +55,63 @@
   border-radius: var(--container-radius)
 }
 
+/* Hide the native checkbox */
 .theme-switch__checkbox {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Custom switch styles */
+.theme-switch__slider {
+  display: inline-block;
+  width: 2.5rem;
+  height: 1.5rem;
+  background: #10b981; /* checked style becomes default (unchecked) */
+  border-radius: 9999px;
+  position: relative;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.theme-switch__slider::before {
+  content: "";
+  position: absolute;
+  left: 0.25rem;
+  top: 0.25rem;
+  width: 1rem;
+  height: 1rem;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+/* Swap styles: when checked, show unchecked style */
+.theme-switch__checkbox:checked + .theme-switch__slider {
+  background: #e5e7eb; /* unchecked style becomes checked */
+}
+
+.theme-switch__checkbox:checked + .theme-switch__slider::before {
+  background: #10b981;
+  transform: translateX(1rem);
+}
+
+.theme-switch__checkbox:checked {
+  background: #fff; /* unchecked style becomes checked */
+  border-color: #888;
+}
+
+.theme-switch__checkbox:checked::after {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background: #10b981;
+  border-radius: 0.25rem;
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
 }
 
 .theme-switch__circle-container {
