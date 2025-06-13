@@ -3,6 +3,7 @@ import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
+import "App.css"; // Ensure you have your CSS file imported
 
 function AppContent() {
   const { darkMode } = useTheme();
