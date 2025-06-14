@@ -3,6 +3,7 @@ import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
+import ScrapedView from "./pages/ScrapedView";
 import "./App.css"; // Ensure you have your CSS file imported
 
 function AppContent() {
@@ -17,6 +18,8 @@ function AppContent() {
         <main className="flex-1 px-4 py-6 pt-16">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/scraped" element={<ScrapedView />} />
+            {/* Add more routes as needed */}
           </Routes>
         </main>
       </div>
