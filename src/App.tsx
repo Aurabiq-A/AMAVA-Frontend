@@ -1,9 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import ScrapedView from "./pages/ScrapedView";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
-import ScrapedView from "./pages/ScrapedView";
+import Chat from "./pages/Chat";
 import "./App.css"; // Ensure you have your CSS file imported
 
 function AppContent() {
@@ -19,6 +20,7 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/scraped" element={<ScrapedView />} />
+            <Route path="/chat" element={<Chat />} />
             {/* Add more routes as needed */}
           </Routes>
         </main>
