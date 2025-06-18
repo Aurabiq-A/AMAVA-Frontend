@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
+
 
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
@@ -11,6 +13,17 @@ const Home: React.FC = () => {
   const [mode, setMode] = useState("scratch");
   const [loading, setLoading] = useState(false);
   const [agentResponse, setAgentResponse] = useState<string | null>(null);
+  const Navigate = useNavigate();
+
+  function extractMainResponse(json: any): string {
+    for (const entry of json) {
+      const part = entry?.content?.parts?.[0];
+      if (part?.text) {
+        return part.text;
+      }
+    }
+    return "No main response found.";
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,8 +31,8 @@ const Home: React.FC = () => {
     setAgentResponse(null);
 
     // Example user/session IDs (replace with real logic if needed)
-    const userId = "u_123";
-    const sessionId = "s_123";
+    const userId = "us";
+    const sessionId = "st";
     const appName = "AMAVAGENT";
 
     // Step 1: Create session
@@ -51,7 +64,14 @@ const Home: React.FC = () => {
       });
 
       const text = await response.text();
-      setAgentResponse(text);
+      let main = "No main response found.";
+      try {
+        const json = JSON.parse(text);
+        main = extractMainResponse(json);
+      } catch {
+        main = text;
+      }
+      setAgentResponse(main);
     } catch (err) {
       setAgentResponse("Error contacting agent.");
     } finally {
@@ -69,7 +89,7 @@ const Home: React.FC = () => {
       </h2>
       <form
         onSubmit={handleSubmit}
-        className={`w-full max-w-2xl flex items-center shadow-md border rounded-full px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-500
+        className={`w-full max-w-3xl flex items-center shadow-md border rounded-full px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-500
           ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
       >
         <MagnifyingGlassIcon
@@ -116,10 +136,9 @@ const Home: React.FC = () => {
           type="submit"
           disabled={loading || !categoryUrl.trim() || !pages.trim()}
           className={`ml-3 font-semibold rounded-full px-5 py-2 text-sm transition-colors
-            ${
-              loading || !categoryUrl.trim() || !pages.trim()
-                ? "bg-emerald-400 cursor-not-allowed text-white"
-                : "bg-emerald-600 hover:bg-emerald-700 text-white"
+            ${loading || !categoryUrl.trim() || !pages.trim()
+              ? "bg-emerald-400 cursor-not-allowed text-white"
+              : "bg-emerald-600 hover:bg-emerald-700 text-white"
             }`}
         >
           {loading ? (
@@ -134,6 +153,8 @@ const Home: React.FC = () => {
           ${darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-900"}`}>
           <div className="font-semibold mb-2">Agent Response:</div>
           <div className="whitespace-pre-wrap">{agentResponse}</div>
+          <button className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors mb-4'
+            onClick={() => Navigate("/progress")}>See Progress</button>
         </div>
       )}
     </div>
