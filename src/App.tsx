@@ -5,7 +5,10 @@ import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
-import "./App.css"; // Ensure you have your CSS file imported
+import ScreenshotListener from "./pages/Progress";
+import "./App.css"; 
+import CheckOnAmz from "./pages/un_gated";
+// Ensure you have your CSS file imported
 
 function AppContent() {
   const { darkMode } = useTheme();
@@ -21,6 +24,8 @@ function AppContent() {
             <Route path="/" element={<Home />} />
             <Route path="/scraped" element={<ScrapedView />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/progress" element={<ScreenshotListener />} />
+            <Route path="/ungated" element={<CheckOnAmz/>} />
             {/* Add more routes as needed */}
           </Routes>
         </main>
