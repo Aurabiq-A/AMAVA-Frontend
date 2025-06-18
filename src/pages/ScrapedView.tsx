@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Product {
   title: string;
@@ -13,6 +14,7 @@ interface Product {
 function ScrapedView() {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string>('');
+  const Navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://localhost:51483/api/get_scraped_data')
@@ -38,8 +40,12 @@ function ScrapedView() {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h1>Scraped Products</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <h1>Products From Wholesaler</h1>
+      {/* Create a button with some styling using tailwind */}
+      <button
+        className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors mb-4'
+        onClick={() => Navigate("/ungated")}> Start Check On Amazon </button>
+      {/* {error && <p style={{ color: 'red' }}>{error}</p>} */}
 
       {products.length === 0 && !error && <p>No products to show.</p>}
 
