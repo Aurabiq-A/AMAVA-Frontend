@@ -1,8 +1,8 @@
 // filepath: /workspaces/AMAVA-Frontend/src/components/Header.tsx
 import React from "react";
-import { SunIcon, MoonIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../context/ThemeContext";
-
+// SunIcon, MoonIcon, 
 const Header: React.FC = () => {
   const { darkMode, toggleDarkMode } = useTheme();
 
