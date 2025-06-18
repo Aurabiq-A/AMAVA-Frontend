@@ -7,15 +7,23 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-full min-h-screen px-2 py-4 pt-16 bg-white text-gray-900 border-r border-gray-200 dark:bg-gray-900 dark:text-white dark:border-gray-800">
+    <div className={`mt-15 h-full min-h-screen px-2 py-4 ${darkMode
+          ? "bg-gray-900 text-white border-r border-gray-800"
+          : "bg-white text-gray-900 border-r border-gray-200"
+        }`}>
       <ul className="w-full flex flex-col gap-2">
         <li className="flex-center cursor-pointer w-full whitespace-nowrap">
           <button
             onClick={() => navigate("/")}
-            className="flex size-full gap-4 p-4 group font-semibold rounded-full bg-cover transition-all ease-linear hover:bg-purple-100 hover:shadow-inner focus:bg-gradient-to-r from-purple-400 to-purple-600 focus:text-white text-gray-700 dark:hover:bg-purple-900 dark:hover:shadow-inner dark:focus:bg-gradient-to-r dark:from-purple-700 dark:to-purple-900 dark:focus:text-white dark:text-gray-200"
+            className={`flex size-full gap-4 p-4 group font-semibold rounded-full bg-cover transition-all ease-linear
+              ${darkMode
+                ? "hover:bg-purple-900 hover:shadow-inner focus:bg-gradient-to-r from-purple-700 to-purple-900 focus:text-white text-gray-200"
+                : "hover:bg-purple-100 hover:shadow-inner focus:bg-gradient-to-r from-purple-400 to-purple-600 focus:text-white text-gray-700"
+              }`}
           >
             <svg
-              stroke="#000000"
+            // if darkMode is true, strock="#fff" else strock="#000"
+              stroke={`${darkMode ? "#000" : "#fff"}`}
               className="icon glyph size-6 group-focus:fill-white group-focus:stroke-white"
               id="dashboard-alt"
               xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +44,11 @@ const Sidebar: React.FC = () => {
         <li className="flex-center cursor-pointer w-full whitespace-nowrap">
           <button
             onClick={() => navigate("/ungated")}
-            className="flex size-full gap-4 p-4 group font-semibold rounded-full bg-cover transition-all ease-linear hover:bg-purple-100 hover:shadow-inner focus:bg-gradient-to-r from-purple-400 to-purple-600 focus:text-white text-gray-700 dark:hover:bg-purple-900 dark:hover:shadow-inner dark:focus:bg-gradient-to-r dark:from-purple-700 dark:to-purple-900 dark:focus:text-white dark:text-gray-200"
+            className={`flex size-full gap-4 p-4 group font-semibold rounded-full bg-cover transition-all ease-linear
+              ${darkMode
+                ? "hover:bg-purple-900 hover:shadow-inner focus:bg-gradient-to-r from-purple-700 to-purple-900 focus:text-white text-gray-200"
+                : "hover:bg-purple-100 hover:shadow-inner focus:bg-gradient-to-r from-purple-400 to-purple-600 focus:text-white text-gray-700"
+              }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -62,8 +74,11 @@ const Sidebar: React.FC = () => {
         <li className="flex-center cursor-pointer w-full whitespace-nowrap">
           <button
             onClick={() => navigate("/scraped")}
-            className="flex size-full gap-4 p-4 group font-semibold rounded-full bg-cover transition-all ease-linear hover:bg-purple-100 hover:shadow-inner focus:bg-gradient-to-r from-purple-400 to-purple-600 focus:text-white text-gray-700 dark:hover:bg-purple-900 dark:hover:shadow-inner dark:focus:bg-gradient-to-r dark:from-purple-700 dark:to-purple-900 dark:focus:text-white dark:text-gray-200"
-          >
+            className={`flex size-full gap-4 p-4 group font-semibold rounded-full bg-cover transition-all ease-linear
+              ${darkMode
+                ? "hover:bg-purple-900 hover:shadow-inner focus:bg-gradient-to-r from-purple-700 to-purple-900 focus:text-white text-gray-200"
+                : "hover:bg-purple-100 hover:shadow-inner focus:bg-gradient-to-r from-purple-400 to-purple-600 focus:text-white text-gray-700"
+              }`}          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -91,8 +106,11 @@ const Sidebar: React.FC = () => {
         <li className="flex-center cursor-pointer w-full whitespace-nowrap">
           <button
             onClick={() => navigate("/chat")}
-            className="flex size-full gap-4 p-4 group font-semibold rounded-full bg-cover transition-all ease-linear hover:bg-purple-100 hover:shadow-inner focus:bg-gradient-to-r from-purple-400 to-purple-600 focus:text-white text-gray-700 dark:hover:bg-purple-900 dark:hover:shadow-inner dark:focus:bg-gradient-to-r dark:from-purple-700 dark:to-purple-900 dark:focus:text-white dark:text-gray-200"
-          >
+            className={`flex size-full gap-4 p-4 group font-semibold rounded-full bg-cover transition-all ease-linear
+              ${darkMode
+                ? "hover:bg-purple-900 hover:shadow-inner focus:bg-gradient-to-r from-purple-700 to-purple-900 focus:text-white text-gray-200"
+                : "hover:bg-purple-100 hover:shadow-inner focus:bg-gradient-to-r from-purple-400 to-purple-600 focus:text-white text-gray-700"
+              }`}          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
