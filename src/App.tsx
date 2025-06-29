@@ -24,7 +24,7 @@ function AppContent() {
             <Route path="/" element={<Home />} />
             <Route path="/scraped" element={<ScrapedView />} />
             <Route path="/chat" element={<Chat />} />
-            <Route path="/progress" element={<ScreenshotListener />} />
+            <Route path="/progress-s" element={<ScreenshotListener />} />
             <Route path="/ungated" element={<CheckOnAmz/>} />
             {/* Add more routes as needed */}
           </Routes>
