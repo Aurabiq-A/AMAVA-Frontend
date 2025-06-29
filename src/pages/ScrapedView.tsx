@@ -17,7 +17,11 @@ function ScrapedView() {
   const Navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:51483/api/get_scraped_data')
+    fetch('https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data' , {
+        method: "GET",
+        headers: { "ngrok-skip-browser-warning": "true" },
+      }) // Add an header to skip ngrok warning
+      
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {

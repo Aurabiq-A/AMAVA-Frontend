@@ -40,9 +40,9 @@ const CheckOnAmz: React.FC = () => {
       setCheckedData(null);
       setAgentResponse(null);
       try {
-        const response = await fetch("http://localhost:51483/checkeddata", {
+        const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/checkeddata", {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         });
         if (!response.ok) {
           throw new Error("Failed to fetch checked data");
@@ -73,10 +73,11 @@ const CheckOnAmz: React.FC = () => {
       const promptText = `Hello from Server scraping is done wholesale(888lots)'s website now start checking on Amazon`;
 
       try {
-        const response = await fetch("http://localhost:51483/run", {
+        const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
           body: JSON.stringify({
+
             appName,
             userId,
             sessionId,
@@ -110,9 +111,9 @@ const CheckOnAmz: React.FC = () => {
     setDownloading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:51483/exceldata", {
+      const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/exceldata", {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { "ngrok-skip-browser-warning": "true","Content-Type": "application/json" },
       });
       if (!response.ok) {
         throw new Error("Failed to fetch merged data.");

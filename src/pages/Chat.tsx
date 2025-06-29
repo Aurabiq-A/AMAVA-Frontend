@@ -17,7 +17,7 @@ const Chat: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5183/chat?user=${encodeURIComponent(input)}`,
+        `https://electric-mistakenly-rat.ngrok-free.app/chat?user=${encodeURIComponent(input)}`,
         { method: "GET" }
       );
       const data = await response.json();
