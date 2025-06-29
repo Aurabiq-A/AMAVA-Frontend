@@ -67,35 +67,35 @@ const CheckOnAmz: React.FC = () => {
       setLoading(true);
       setError(null);
       setAgentResponse(null);
-      const userId = "us";
-      const sessionId = "st";
-      const appName = "AMAVAGENT";
-      const promptText = `Hello from Server scraping is done wholesale(888lots)'s website now start checking on Amazon`;
+      // const userId = "us";
+      // const sessionId = "st";
+      // const appName = "AMAVAGENT";
+      // const promptText = `Hello from Server scraping is done wholesale(888lots)'s website now start checking on Amazon`;
 
       try {
-        const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
-          method: "POST",
-          headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
-          body: JSON.stringify({
+        // const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+          // method: "POST",
+        //   headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
+        //   body: JSON.stringify({
 
-            appName,
-            userId,
-            sessionId,
-            newMessage: {
-              role: "user",
-              parts: [{ text: promptText }],
-            },
-          }),
-        });
-        const text = await response.text();
-        let main = "No main response found.";
-        try {
-          const json = JSON.parse(text);
-          main = extractMainResponse(json);
-        } catch {
-          main = text;
-        }
-        setAgentResponse(main);
+        //     appName,
+        //     userId,
+        //     sessionId,
+        //     newMessage: {
+        //       role: "user",
+        //       parts: [{ text: promptText }],
+        //     },
+        //   }),
+        // });
+        // const text = await response.text();
+        // let main = "No main response found.";
+        // try {
+          // const json = JSON.parse(text);
+          // main = extractMainResponse(json);
+        // } catch {
+          // main = text;
+        // }
+        // setAgentResponse(main);
         setError("Started checking on Amazon. We will notify you after its done!.");
       } catch (err) {
         setError("Failed to contact agent for Amazon check.");

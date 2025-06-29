@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
 
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
@@ -12,7 +13,12 @@ const Home: React.FC = () => {
   const [mode, setMode] = useState("scratch");
   const [loading, setLoading] = useState(false);
   const [agentResponse, setAgentResponse] = useState<string | null>(null);
+  const [excelData, setExcelData] = useState<any[]>([]);
+  const [showExcelModal, setShowExcelModal] = useState(false);
+  const [selectedKey, setSelectedKey] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
   const Navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function extractMainResponse(json: any): string {
     for (const entry of json) {
@@ -29,7 +35,6 @@ const Home: React.FC = () => {
     setLoading(true);
     setAgentResponse(null);
 
-    // Example user/session IDs (replace with real logic if needed)
     const userId = "us";
     const sessionId = "st";
     const appName = "AMAVAGENT";
@@ -39,7 +44,7 @@ const Home: React.FC = () => {
       `https://electric-mistakenly-rat.ngrok-free.app/apps/${appName}/users/${userId}/sessions/${sessionId}`,
       {
         method: "POST",
-        headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
+        headers: { "ngrok-skip-browser-warning": "true","Content-Type": "application/json" },
         body: JSON.stringify({ state: { key1: "value1", key2: 42 } }),
       }
     );
@@ -50,7 +55,7 @@ const Home: React.FC = () => {
     try {
       const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
         method: "POST",
-        headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
+        headers: { "ngrok-skip-browser-warning": "true","Content-Type": "application/json" },
         body: JSON.stringify({
           appName,
           userId,
@@ -77,6 +82,55 @@ const Home: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // Handle Excel Upload
+  const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const data = evt.target?.result;
+      if (!data) return;
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+      setExcelData(json);
+      setShowExcelModal(true);
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  // Handle user selection and upload to backend
+  const handleExcelSubmit = async () => {
+    if (!selectedKey) return;
+    setUploading(true);
+
+    // Change the key name for search/check on amazon
+    const updatedData = excelData.map((row) => ({
+      ...row,
+      search_key: row[selectedKey], // Add a new key 'search_key' with the selected value
+    }));
+
+    try {
+      await fetch("https://electric-mistakenly-rat.ngrok-free.app/api/scraped_dataresults", {
+        method: "POST",
+        headers: { "ngrok-skip-browser-warning": "true","Content-Type": "application/json" },
+        body: JSON.stringify({ data: updatedData }),
+      });
+      setShowExcelModal(false);
+      setExcelData([]);
+      setSelectedKey("");
+      alert("Excel data uploaded and sent for checking on Amazon!");
+    } catch (err) {
+      alert("Failed to upload Excel data.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Get all possible keys from the first row for selection
+  const excelKeys = excelData.length > 0 ? Object.keys(excelData[0]) : [];
 
   return (
     <div
@@ -147,6 +201,61 @@ const Home: React.FC = () => {
           )}
         </button>
       </form>
+
+      {/* Or and Upload Excel */}
+      <div className="flex items-center my-6 w-full max-w-3xl">
+        <div className="flex-1 border-t border-gray-300 dark:border-gray-700"></div>
+        <span className="mx-4 text-lg font-semibold text-gray-500 dark:text-gray-400">Or</span>
+        <div className="flex-1 border-t border-gray-300 dark:border-gray-700"></div>
+      </div>
+      <button
+        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow mb-4"
+        onClick={() => fileInputRef.current?.click()}
+      >
+        Upload Excel File
+      </button>
+      <input
+        type="file"
+        accept=".xlsx,.xls"
+        ref={fileInputRef}
+        onChange={handleExcelUpload}
+        className="hidden"
+      />
+
+      {/* Modal for selecting key */}
+      {showExcelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-lg max-w-md w-full p-6`}>
+            <h3 className="text-lg font-bold mb-4">Select Column for Amazon Check</h3>
+            <div className="mb-4">
+              <select
+                value={selectedKey}
+                onChange={e => setSelectedKey(e.target.value)}
+                className="w-full px-3 py-2 rounded border dark:bg-gray-800 dark:border-gray-700"
+              >
+                <option value="">Select column...</option>
+                {excelKeys.map(key => (
+                  <option key={key} value={key}>{key}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded shadow mr-2"
+              disabled={!selectedKey || uploading}
+              onClick={handleExcelSubmit}
+            >
+              {uploading ? "Uploading..." : "Submit"}
+            </button>
+            <button
+              className="ml-2 px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold"
+              onClick={() => setShowExcelModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {agentResponse && (
         <div className={`w-full max-w-2xl mt-6 p-4 rounded-xl shadow border
           ${darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-900"}`}>
