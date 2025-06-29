@@ -73,15 +73,7 @@ const CheckOnAmz: React.FC = () => {
       const promptText = `Hello from Server scraping is done wholesale(888lots)'s website now start checking on Amazon`;
 
       try {
-        await fetch(
-      `http://localhost:1483/apps/${appName}/users/${userId}/sessions/${sessionId}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ state: { key1: "value1", key2: 42 } }),
-      }
-    );
-        const response = await fetch("http://localhost:1483/run", {
+        const response = await fetch("http://localhost:51483/run", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

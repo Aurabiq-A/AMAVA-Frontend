@@ -4,7 +4,6 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 
-
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
 
@@ -35,9 +34,9 @@ const Home: React.FC = () => {
     const sessionId = "st";
     const appName = "AMAVAGENT";
 
-    // Step 1: Create session
+    // Step 1: Create session (proxy to 51483)
     await fetch(
-      `http://localhost:1483/apps/${appName}/users/${userId}/sessions/${sessionId}`,
+      `http://localhost:51483/apps/${appName}/users/${userId}/sessions/${sessionId}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,11 +44,11 @@ const Home: React.FC = () => {
       }
     );
 
-    // Step 2: Run agent
+    // Step 2: Run agent (proxy to 51483)
     const promptText = `Hey scrape me this wholesale/distributor's website URL: ${categoryUrl} and Start from zero = ${mode === "scratch" ? "True" : "False"} and pages = ${pages} (I have reviewed everything jst start scraping)`;
 
     try {
-      const response = await fetch("http://localhost:1483/run", {
+      const response = await fetch("http://localhost:51483/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
