@@ -135,6 +135,35 @@ const Sidebar: React.FC = () => {
             Chat
           </button>
         </li>
+                <li className="flex-center cursor-pointer w-full whitespace-nowrap">
+          <button
+            onClick={() => navigate("/progress-s")}
+            className={`flex size-full gap-4 p-4 group font-semibold rounded-full bg-cover transition-all ease-linear
+              ${darkMode
+                ? "hover:bg-purple-900 hover:shadow-inner focus:bg-gradient-to-r from-purple-700 to-purple-900 focus:text-white text-gray-200"
+                : "hover:bg-purple-100 hover:shadow-inner focus:bg-gradient-to-r from-purple-400 to-purple-600 focus:text-white text-gray-700"
+              }`}
+          >
+            <svg
+            // if darkMode is true, strock="#fff" else strock="#000"
+              stroke={`${darkMode ? "#000" : "#fff"}`}
+              className="icon glyph size-6 group-focus:fill-white group-focus:stroke-white"
+              id="dashboard-alt"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill={darkMode ? "#fff" : "#000"}
+            >
+              <g strokeWidth="0" id="SVGRepo_bgCarrier"></g>
+              <g strokeLinejoin="round" strokeLinecap="round" id="SVGRepo_tracerCarrier"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path d="M14,10V22H4a2,2,0,0,1-2-2V10Z"></path>
+                <path d="M22,10V20a2,2,0,0,1-2,2H16V10Z"></path>
+                <path d="M22,4V8H2V4A2,2,0,0,1,4,2H20A2,2,0,0,1,22,4Z"></path>
+              </g>
+            </svg>
+            Scrapping Progress
+          </button>
+        </li>
       </ul>
     </div>
   );
