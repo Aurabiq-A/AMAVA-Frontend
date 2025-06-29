@@ -1,3 +1,11 @@
+@keyframes glowing {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 400% 0%; }
+    100% { background-position: 0% 0%; }
+}
+.animate-glowing::before {
+    animation: glowing 20s linear infinite;
+}
 .theme-switch {
   --toggle-size: 20px;
   /* the size is adjusted using font-size,

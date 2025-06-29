@@ -23,14 +23,14 @@ const ScreenshotListener: React.FC = () => {
     };
 
     fetchScreenshot();
-    interval = setInterval(fetchScreenshot, 2000);
+    interval = setInterval(fetchScreenshot, 200);
 
     return () => {
       clearInterval(interval);
       // Clean up object URL
       if (imgSrc) URL.revokeObjectURL(imgSrc);
     };
-    // eslint-disable-next-line
+    // eslint-disable-next-line 
   }, []);
 
   return (

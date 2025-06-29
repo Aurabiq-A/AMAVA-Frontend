@@ -46,7 +46,7 @@ const Home: React.FC = () => {
     );
 
     // Step 2: Run agent
-    const promptText = `Hey scrape me this wholesale(888lots)'s website URL: ${categoryUrl} and Start from zero = ${mode === "scratch" ? "True" : "False"} and pages = ${pages} (I have reviewed everything jst start scraping)`;
+    const promptText = `Hey scrape me this wholesale/distributor's website URL: ${categoryUrl} and Start from zero = ${mode === "scratch" ? "True" : "False"} and pages = ${pages} (I have reviewed everything jst start scraping)`;
 
     try {
       const response = await fetch("http://localhost:1483/run", {
