@@ -130,7 +130,7 @@ const Home: React.FC = () => {
             }`}
         >
           <option value="scratch">Start from Scratch</option>
-          <option value="resume">Resume From Last Session</option>
+          <option value="resume">Resume From Last Session 💫</option>
         </select>
         <button
           type="submit"
