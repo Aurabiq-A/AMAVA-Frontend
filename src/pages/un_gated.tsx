@@ -23,15 +23,15 @@ const CheckOnAmz: React.FC = () => {
   const [agentResponse, setAgentResponse] = useState<string | null>(null);
 
   // Extract main agent response (copied from Home.tsx)
-  function extractMainResponse(json: any): string {
-    for (const entry of json) {
-      const part = entry?.content?.parts?.[0];
-      if (part?.text) {
-        return part.text;
-      }
-    }
-    return "No main response found.";
-  }
+  // function extractMainResponse(json: any): string {
+  //   for (const entry of json) {
+  //     const part = entry?.content?.parts?.[0];
+  //     if (part?.text) {
+  //       return part.text;
+  //     }
+  //   }
+  //   return "No main response found.";
+  // }
 
   useEffect(() => {
     const fetchCheckedData = async () => {
