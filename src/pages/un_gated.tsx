@@ -41,10 +41,10 @@ const CheckOnAmz: React.FC = () => {
     const userId = "us";
     const sessionId = "st";
     const appName = "AMAVAGENT";
-    const promptText = `Hello from Server scraping is done wholesale(888lots)'s website now start checking on Amazon`;
+    const promptText = `Hello from Server scraping is done wholesaler's website now start checking on Amazon`;
 
     try {
-      const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+      let response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -59,12 +59,42 @@ const CheckOnAmz: React.FC = () => {
         }),
       });
       const text = await response.text();
+
+      // Check for session not found and create session if needed
+      if (text.includes('"detail":"Session not found"')) {
+        // Step 1: Create session (proxy to 51483)
+        await fetch(
+          `https://electric-mistakenly-rat.ngrok-free.app/apps/${appName}/users/${userId}/sessions/${sessionId}`,
+          {
+            method: "POST",
+            headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
+            body: JSON.stringify({ state: { key1: "value1", key2: 42 } }),
+          }
+        );
+        // Step 2: Retry agent call
+        response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+          method: "POST",
+          headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
+          body: JSON.stringify({
+
+            appName,
+            userId,
+            sessionId,
+            newMessage: {
+              role: "user",
+              parts: [{ text: promptText }],
+            },
+          }),
+        });
+      }
+
+      const retryText = await response.text();
       let main = "No main response found.";
       try {
-        const json = JSON.parse(text);
+        const json = JSON.parse(retryText);
         main = extractMainResponse(json);
       } catch {
-        main = text;
+        main = retryText;
       }
       setAgentResponse(main);
       setError("Started checking on Amazon. We will notify you after its done!.");
