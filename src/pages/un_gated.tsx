@@ -23,15 +23,57 @@ const CheckOnAmz: React.FC = () => {
   const [agentResponse, setAgentResponse] = useState<string | null>(null);
 
   // Extract main agent response (copied from Home.tsx)
-  // function extractMainResponse(json: any): string {
-  //   for (const entry of json) {
-  //     const part = entry?.content?.parts?.[0];
-  //     if (part?.text) {
-  //       return part.text;
-  //     }
-  //   }
-  //   return "No main response found.";
-  // }
+  function extractMainResponse(json: any): string {
+    for (const entry of json) {
+      const part = entry?.content?.parts?.[0];
+      if (part?.text) {
+        return part.text;
+      }
+    }
+    return "No main response found.";
+  }
+
+  // Move this function OUTSIDE of useEffect!
+  const runAgentForAmazonCheck = async () => {
+    setLoading(true);
+    setError(null);
+    setAgentResponse(null);
+    const userId = "us";
+    const sessionId = "st";
+    const appName = "AMAVAGENT";
+    const promptText = `Hello from Server scraping is done wholesale(888lots)'s website now start checking on Amazon`;
+
+    try {
+      const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+        method: "POST",
+        headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
+        body: JSON.stringify({
+
+          appName,
+          userId,
+          sessionId,
+          newMessage: {
+            role: "user",
+            parts: [{ text: promptText }],
+          },
+        }),
+      });
+      const text = await response.text();
+      let main = "No main response found.";
+      try {
+        const json = JSON.parse(text);
+        main = extractMainResponse(json);
+      } catch {
+        main = text;
+      }
+      setAgentResponse(main);
+      setError("Started checking on Amazon. We will notify you after its done!.");
+    } catch (err) {
+      setError("Failed to contact agent for Amazon check.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchCheckedData = async () => {
@@ -57,48 +99,6 @@ const CheckOnAmz: React.FC = () => {
       } catch (error) {
         // If fetch fails, run the agent as fallback
         await runAgentForAmazonCheck();
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Run agent to start Amazon check and show agent response
-    const runAgentForAmazonCheck = async () => {
-      setLoading(true);
-      setError(null);
-      setAgentResponse(null);
-      // const userId = "us";
-      // const sessionId = "st";
-      // const appName = "AMAVAGENT";
-      // const promptText = `Hello from Server scraping is done wholesale(888lots)'s website now start checking on Amazon`;
-
-      try {
-        // const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
-          // method: "POST",
-        //   headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
-        //   body: JSON.stringify({
-
-        //     appName,
-        //     userId,
-        //     sessionId,
-        //     newMessage: {
-        //       role: "user",
-        //       parts: [{ text: promptText }],
-        //     },
-        //   }),
-        // });
-        // const text = await response.text();
-        // let main = "No main response found.";
-        // try {
-          // const json = JSON.parse(text);
-          // main = extractMainResponse(json);
-        // } catch {
-          // main = text;
-        // }
-        // setAgentResponse(main);
-        setError("Started checking on Amazon. We will notify you after its done!.");
-      } catch (err) {
-        setError("Failed to contact agent for Amazon check.");
       } finally {
         setLoading(false);
       }
@@ -176,6 +176,15 @@ const CheckOnAmz: React.FC = () => {
             {downloading ? "Downloading..." : "Download Excel"}
           </button>
         )}
+
+        {/* New "Check on Amz" button */}
+        <button
+          onClick={runAgentForAmazonCheck}
+          disabled={loading}
+          className="mb-8 ml-4 px-4 py-2 rounded h-15 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold transition disabled:opacity-60"
+        >
+          {loading ? "Checking..." : "Check on Amz"}
+        </button>
 
         {loading && (
           <div className="mb-8 text-lg font-semibold text-blue-500">
