@@ -17,16 +17,17 @@ function ScrapedView() {
   const Navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data' , {
-        method: "GET",
-        headers: { "ngrok-skip-browser-warning": "true" },
-      }) // Add an header to skip ngrok warning
-      
+    fetch('https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data', {
+      method: "GET",
+      headers: { "ngrok-skip-browser-warning": "true" },
+    }) // Add an header to skip ngrok warning
+
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
           try {
             const parsed: Product[] = JSON.parse(data.raw_string);
+            alert(parsed)
             setProducts(parsed);
           } catch (err) {
             setError('Failed to parse JSON');
@@ -58,21 +59,23 @@ function ScrapedView() {
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
         gap: '1rem'
       }}>
-        {products.map((product, index) => (
-          <div key={index} style={{
-            border: '1px solid #ccc',
-            padding: '1rem',
-            borderRadius: '8px'
-          }}>
-            <h2>{product.title}</h2>
-            <p><strong>Price:</strong> ${product.price}</p>
-            <p><strong>UPC:</strong> {product.upc}</p>
-            <p><strong>SKU:</strong> {product.sku}</p>
-            <p><strong>ASIN:</strong> {product.asin}</p>
-            <p><strong>MOQ:</strong> {product.moq}</p>
-            <a href={product.link} target="_blank" rel="noopener noreferrer">View Product</a>
-          </div>
-        ))}
+        <script>console.log(products);</script>
+        {Array.isArray(products) &&
+          products.map((product, index) => (
+            <div key={index} style={{
+              border: '1px solid #ccc',
+              padding: '1rem',
+              borderRadius: '8px'
+            }}>
+              <h2>{product.title}</h2>
+              <p><strong>Price:</strong> ${product.price}</p>
+              <p><strong>UPC:</strong> {product.upc}</p>
+              <p><strong>SKU:</strong> {product.sku}</p>
+              <p><strong>ASIN:</strong> {product.asin}</p>
+              <p><strong>MOQ:</strong> {product.moq}</p>
+              <a href={product.link} target="_blank" rel="noopener noreferrer">View Product</a>
+            </div>
+          ))}
       </div>
     </div>
   );
