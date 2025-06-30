@@ -26,8 +26,8 @@ function ScrapedView() {
       .then(data => {
         if (data.status === 'success') {
           try {
+            alert(data.raw_string);
             const parsed: Product[] = JSON.parse(data.raw_string);
-            alert(parsed)
             setProducts(parsed);
           } catch (err) {
             setError('Failed to parse JSON');
