@@ -22,6 +22,12 @@ const CheckOnAmz: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
   const [agentResponse, setAgentResponse] = useState<string | null>(null);
 
+  // New state for search key modal
+  const [showSearchKeyModal, setShowSearchKeyModal] = useState(false);
+  const [selectedKey, setSelectedKey] = useState<string>("");
+  const [searchKeys, setSearchKeys] = useState<string[]>([]);
+  const [sendingSearchKey, setSendingSearchKey] = useState(false);
+
   // Extract main agent response (copied from Home.tsx)
   function extractMainResponse(json: any): string {
     for (const entry of json) {
@@ -32,6 +38,82 @@ const CheckOnAmz: React.FC = () => {
     }
     return "No main response found.";
   }
+
+  // Helper to get all possible keys from checkedData
+  function getAllPossibleKeys(): string[] {
+    if (!checkedData) return [];
+    const all = Object.values(checkedData.results).flat();
+    const keys = new Set<string>();
+    all.forEach((item) => {
+      Object.keys(item).forEach((k) => keys.add(k));
+    });
+    return Array.from(keys);
+  }
+
+  // When user clicks "Check on Amz"
+  const handleCheckOnAmzClick = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Fetch scraped data for dynamic keys
+      const res = await fetch("https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data", {
+        method: "GET",
+        headers: { "ngrok-skip-browser-warning": "true" },
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        const parsed = JSON.parse(data.raw_string).data;
+        if (parsed && parsed.length > 0) {
+          setSearchKeys(Object.keys(parsed[0]));
+          setShowSearchKeyModal(true);
+        } else {
+          setError("No scraped data found.");
+        }
+      } else {
+        setError("Failed to load scraped data.");
+      }
+    } catch (err) {
+      setError("Failed to fetch scraped data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // When user confirms which key to use
+  const handleSendSearchKey = async () => {
+    if (!selectedKey) return;
+    setSendingSearchKey(true);
+
+    try {
+      // Fetch scraped data again to get the values for the selected key
+      const res = await fetch("https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data", {
+        method: "GET",
+        headers: { "ngrok-skip-browser-warning": "true" },
+      });
+      const data = await res.json();
+      let unitList: any[] = [];
+      if (data.status === "success") {
+        const parsed = JSON.parse(data.raw_string).data;
+        unitList = parsed.map((item: any) => item[selectedKey]).filter((v: any) => !!v);
+      }
+
+      await fetch("https://electric-mistakenly-rat.ngrok-free.app/search-key", {
+        method: "POST",
+        headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
+        body: JSON.stringify({ search_key: selectedKey, values: unitList }),
+      });
+      setShowSearchKeyModal(false);
+      setSelectedKey("");
+      setError("Search key sent! Now checking on Amazon...");
+
+      // Start the agent after sending search key
+      await runAgentForAmazonCheck();
+    } catch (err) {
+      setError("Failed to send search key.");
+    } finally {
+      setSendingSearchKey(false);
+    }
+  };
 
   // Move this function OUTSIDE of useEffect!
   const runAgentForAmazonCheck = async () => {
@@ -44,7 +126,7 @@ const CheckOnAmz: React.FC = () => {
     const promptText = `Hello from Server scraping is done wholesaler's website now start checking on Amazon`;
 
     try {
-      const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+      let response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -59,12 +141,42 @@ const CheckOnAmz: React.FC = () => {
         }),
       });
       const text = await response.text();
+      // Check for session not found and create session if needed
+      if (text.includes('"detail":"Session not found"')) {
+        // Step 1: Create session (proxy to 51483)
+        await fetch(
+          `https://electric-mistakenly-rat.ngrok-free.app/apps/${appName}/users/${userId}/sessions/${sessionId}`,
+          {
+            method: "POST",
+            headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
+            body: JSON.stringify({ state: { key1: "value1", key2: 42 } }),
+          }
+        )
+
+        // Step 2: Retry agent call
+        response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+          method: "POST",
+          headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
+          body: JSON.stringify({
+            appName,
+            userId,
+            sessionId,
+            newMessage: {
+              role: "user",
+              parts: [{ text: promptText }],
+            },
+          }),
+        });
+      }
+
+      const retryText = await response.text();
+
       let main = "No main response found.";
       try {
-        const json = JSON.parse(text);
+        const json = JSON.parse(retryText);
         main = extractMainResponse(json);
       } catch {
-        main = text;
+        main = retryText;
       }
       setAgentResponse(main);
       setError("Started checking on Amazon. We will notify you after its done!.");
@@ -113,7 +225,7 @@ const CheckOnAmz: React.FC = () => {
     try {
       const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/exceldata", {
         method: "GET",
-        headers: { "ngrok-skip-browser-warning": "true","Content-Type": "application/json" },
+        headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
       });
       if (!response.ok) {
         throw new Error("Failed to fetch merged data.");
@@ -123,7 +235,7 @@ const CheckOnAmz: React.FC = () => {
 
       // Flatten merged_data for Excel
       const rows: any[] = [];
-      merged.forEach((item:any) => {
+      merged.forEach((item: any) => {
         if (item.amazon_data && item.amazon_data.length > 0) {
           item.amazon_data.forEach((ad: any) => {
             rows.push({
@@ -156,15 +268,14 @@ const CheckOnAmz: React.FC = () => {
   // Prepare a flat list of products for display
   const flatProducts: { upc: string; product: ProductResult }[] = checkedData
     ? Object.entries(checkedData.results).flatMap(([upc, products]) =>
-        products.map((product) => ({ upc, product }))
-      )
+      products.map((product) => ({ upc, product }))
+    )
     : [];
 
   return (
     <div
-      className={`flex items-center justify-center min-h-screen ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-      }`}
+      className={`flex items-center justify-center min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+        }`}
     >
       <div className="text-center w-full max-w-3xl">
         {checkedData && (
@@ -179,8 +290,8 @@ const CheckOnAmz: React.FC = () => {
 
         {/* New "Check on Amz" button */}
         <button
-          onClick={runAgentForAmazonCheck}
-          disabled={loading}
+          onClick={handleCheckOnAmzClick}
+          disabled={loading || !checkedData}
           className="mb-8 ml-4 px-4 py-2 rounded h-15 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold transition disabled:opacity-60"
         >
           {loading ? "Checking..." : "Check on Amz"}
@@ -209,9 +320,8 @@ const CheckOnAmz: React.FC = () => {
               {flatProducts.slice(0, 10).map(({ upc, product }, idx) => (
                 <div
                   key={upc + idx}
-                  className={`rounded-xl border shadow p-4 flex flex-col items-start ${
-                    darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-                  }`}
+                  className={`rounded-xl border shadow p-4 flex flex-col items-start ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+                    }`}
                 >
                   <div className="font-semibold mb-1">
                     UPC: <span className="font-mono">{upc}</span>
@@ -303,9 +413,8 @@ const CheckOnAmz: React.FC = () => {
                   {checkedData.skipped.map((item, idx) => (
                     <span
                       key={item.productUPC + idx}
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        darkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-gray-800"
-                      }`}
+                      className={`px-3 py-1 rounded-full text-sm ${darkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-gray-800"
+                        }`}
                     >
                       {item.productUPC}
                     </span>
@@ -320,6 +429,40 @@ const CheckOnAmz: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Modal for selecting search key */}
+      {showSearchKeyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-lg max-w-md w-full p-6`}>
+            <h3 className="text-lg font-bold mb-4">Select Unit/Column for Amazon Check</h3>
+            <div className="mb-4">
+              <select
+                value={selectedKey}
+                onChange={e => setSelectedKey(e.target.value)}
+                className="w-full px-3 py-2 rounded border dark:bg-gray-800 dark:border-gray-700"
+              >
+                <option value="">Select column...</option>
+                {searchKeys.map(key => (
+                  <option key={key} value={key}>{key}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded shadow mr-2"
+              disabled={!selectedKey || sendingSearchKey}
+              onClick={handleSendSearchKey}
+            >
+              {sendingSearchKey ? "Sending..." : "Submit"}
+            </button>
+            <button
+              className="ml-2 px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold"
+              onClick={() => setShowSearchKeyModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
