@@ -45,7 +45,7 @@ const Home: React.FC = () => {
       `https://electric-mistakenly-rat.ngrok-free.app/apps/${appName}/users/${userId}/sessions/${sessionId}`,
       {
         method: "POST",
-        headers: { "ngrok-skip-browser-warning": "true","Content-Type": "application/json" },
+        headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({ state: { key1: "value1", key2: 42 } }),
       }
     );
@@ -56,7 +56,7 @@ const Home: React.FC = () => {
     try {
       const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
         method: "POST",
-        headers: { "ngrok-skip-browser-warning": "true","Content-Type": "application/json" },
+        headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({
           appName,
           userId,
@@ -116,7 +116,7 @@ const Home: React.FC = () => {
     try {
       await fetch("https://electric-mistakenly-rat.ngrok-free.app/api/scraped_dataresults", {
         method: "POST",
-        headers: { "ngrok-skip-browser-warning": "true","Content-Type": "application/json" },
+        headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({ data: updatedData }),
       });
       setShowExcelModal(false);
@@ -184,7 +184,21 @@ const Home: React.FC = () => {
           {loading ? (
             <ArrowPathIcon className={styles.loadingIcon} />
           ) : (
-            "Search"
+            // Send message icon SVG
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              fill="none"
+              viewBox="0 0 24 24"
+              className={styles.sendIcon}
+              style={{ display: "inline", verticalAlign: "middle" }}
+            >
+              <path
+                d="M3.4 20.29l17.45-7.48c.8-.34.8-1.48 0-1.82L3.4 3.51c-.7-.3-1.44.37-1.23 1.1l2.37 7.39c.13.4.13.83 0 1.23l-2.37 7.39c-.21.73.53 1.4 1.23 1.08z"
+                fill="#2563eb"
+              />
+            </svg>
           )}
         </button>
       </form>
@@ -198,7 +212,50 @@ const Home: React.FC = () => {
         className={styles.uploadBtn}
         onClick={() => fileInputRef.current?.click()}
       >
-        Upload Excel File
+        {/* Remove newline and merge and svg and text in one line*/}
+
+
+        <span className={styles.uploadBtnIconText}>
+          <svg
+            width="19px"
+            height="21px"
+            viewBox="0 0 19 21"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+          >
+            <title>Group</title>
+            <g
+              id="Page-1"
+              stroke="none"
+              stroke-width="1"
+              fill="none"
+              fill-rule="evenodd"
+            >
+              <g id="Artboard" transform="translate(-142.000000, -122.000000)">
+                <g id="Group" transform="translate(142.000000, 122.000000)">
+                  <path
+                    d="M3.4,4 L11.5,4 L11.5,4 L16,8.25 L16,17.6 C16,19.4777681 14.4777681,21 12.6,21 L3.4,21 C1.52223185,21 6.74049485e-16,19.4777681 0,17.6 L0,7.4 C2.14128934e-16,5.52223185 1.52223185,4 3.4,4 Z"
+                    id="Rectangle-Copy"
+                    fill="#C4FFE4"
+                  ></path>
+                  <path
+                    d="M6.4,0 L12,0 L12,0 L19,6.5 L19,14.6 C19,16.4777681 17.4777681,18 15.6,18 L6.4,18 C4.52223185,18 3,16.4777681 3,14.6 L3,3.4 C3,1.52223185 4.52223185,7.89029623e-16 6.4,0 Z"
+                    id="Rectangle"
+                    fill="#85EBBC"
+                  ></path>
+                  <path
+                    d="M12,0 L12,5.5 C12,6.05228475 12.4477153,6.5 13,6.5 L19,6.5 L19,6.5 L12,0 Z"
+                    id="Path-2"
+                    fill="#64B18D"
+                  ></path>
+                </g>
+              </g>
+            </g>
+          </svg>
+
+          Upload Excel File
+        </span>
       </button>
       <input
         type="file"

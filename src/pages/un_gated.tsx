@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 import * as XLSX from "xlsx";
+import styles from "./Home.module.css";
 
 type ProductResult = {
   productASIN: string;
@@ -11,7 +12,7 @@ type CheckedData = {
   results: Record<string, ProductResult[]>;
   skipped: { productUPC: string }[];
   timestamp: string;
-}
+};
 
 const CheckOnAmz: React.FC = () => {
   const { darkMode } = useTheme();
@@ -28,7 +29,6 @@ const CheckOnAmz: React.FC = () => {
   const [searchKeys, setSearchKeys] = useState<string[]>([]);
   const [sendingSearchKey, setSendingSearchKey] = useState(false);
 
-  // Extract main agent response (copied from Home.tsx)
   function extractMainResponse(json: any): string {
     for (const entry of json) {
       const part = entry?.content?.parts?.[0];
@@ -39,23 +39,10 @@ const CheckOnAmz: React.FC = () => {
     return "No main response found.";
   }
 
-  // Helper to get all possible keys from checkedData
-  // function getAllPossibleKeys(): string[] {
-  //   if (!checkedData) return [];
-  //   const all = Object.values(checkedData.results).flat();
-  //   const keys = new Set<string>();
-  //   all.forEach((item) => {
-  //     Object.keys(item).forEach((k) => keys.add(k));
-  //   });
-  //   return Array.from(keys);
-  // }
-
-  // When user clicks "Check on Amz"
   const handleCheckOnAmzClick = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch scraped data for dynamic keys
       const res = await fetch("https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data", {
         method: "GET",
         headers: { "ngrok-skip-browser-warning": "true" },
@@ -79,13 +66,11 @@ const CheckOnAmz: React.FC = () => {
     }
   };
 
-  // When user confirms which key to use
   const handleSendSearchKey = async () => {
     if (!selectedKey) return;
     setSendingSearchKey(true);
 
     try {
-      // Fetch scraped data again to get the values for the selected key
       const res = await fetch("https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data", {
         method: "GET",
         headers: { "ngrok-skip-browser-warning": "true" },
@@ -106,7 +91,6 @@ const CheckOnAmz: React.FC = () => {
       setSelectedKey("");
       setError("Search key sent! Now checking on Amazon...");
 
-      // Start the agent after sending search key
       await runAgentForAmazonCheck();
     } catch (err) {
       setError("Failed to send search key.");
@@ -115,7 +99,6 @@ const CheckOnAmz: React.FC = () => {
     }
   };
 
-  // Move this function OUTSIDE of useEffect!
   const runAgentForAmazonCheck = async () => {
     setLoading(true);
     setError(null);
@@ -130,7 +113,6 @@ const CheckOnAmz: React.FC = () => {
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({
-
           appName,
           userId,
           sessionId,
@@ -141,9 +123,7 @@ const CheckOnAmz: React.FC = () => {
         }),
       });
       const text = await response.text();
-      // Check for session not found and create session if needed
       if (text.includes('"detail":"Session not found"')) {
-        // Step 1: Create session (proxy to 51483)
         await fetch(
           `https://electric-mistakenly-rat.ngrok-free.app/apps/${appName}/users/${userId}/sessions/${sessionId}`,
           {
@@ -151,9 +131,7 @@ const CheckOnAmz: React.FC = () => {
             headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
             body: JSON.stringify({ state: { key1: "value1", key2: 42 } }),
           }
-        )
-
-        // Step 2: Retry agent call
+        );
         response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
           method: "POST",
           headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
@@ -203,13 +181,11 @@ const CheckOnAmz: React.FC = () => {
         }
         const data = await response.json();
         if (!data.checked_data || !data.checked_data.results || Object.keys(data.checked_data.results).length === 0) {
-          // If no checked data, run agent
           await runAgentForAmazonCheck();
         } else {
           setCheckedData(data.checked_data);
         }
       } catch (error) {
-        // If fetch fails, run the agent as fallback
         await runAgentForAmazonCheck();
       } finally {
         setLoading(false);
@@ -233,7 +209,6 @@ const CheckOnAmz: React.FC = () => {
       const data = await response.json();
       const merged = data.merged_data;
 
-      // Flatten merged_data for Excel
       const rows: any[] = [];
       merged.forEach((item: any) => {
         if (item.amazon_data && item.amazon_data.length > 0) {
@@ -248,15 +223,11 @@ const CheckOnAmz: React.FC = () => {
         }
       });
 
-      // Remove amazon_data array from each row (since it's flattened)
       rows.forEach((row) => delete row.amazon_data);
 
-      // Create worksheet and workbook
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "MergedData");
-
-      // Download as Excel file
       XLSX.writeFile(wb, "merged_data.xlsx");
     } catch (error) {
       setError("Failed to download Excel file. Please try again later.");
@@ -265,78 +236,68 @@ const CheckOnAmz: React.FC = () => {
     }
   };
 
-  // Prepare a flat list of products for display
   const flatProducts: { upc: string; product: ProductResult }[] = checkedData
     ? Object.entries(checkedData.results).flatMap(([upc, products]) =>
-      products.map((product) => ({ upc, product }))
-    )
+        products.map((product) => ({ upc, product }))
+      )
     : [];
 
   return (
-    <div
-      className={`flex items-center justify-center min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-        }`}
-    >
-      <div className="text-center w-full max-w-3xl">
+    <div className={`${styles.container} ${darkMode ? styles.dark : styles.light}`}>
+      <div className={styles.responseBox}>
         {checkedData && (
           <button
             onClick={handleDownload}
             disabled={downloading}
-            className={`mb-8 px-4 py-2 rounded h-15 cursor-pointer bg-green-600 hover:bg-green-700 text-white font-semibold transition disabled:opacity-60`}
+            className={styles.uploadBtn}
           >
             {downloading ? "Downloading..." : "Download Excel"}
           </button>
         )}
 
-        {/* New "Check on Amz" button */}
         <button
           onClick={handleCheckOnAmzClick}
           disabled={loading || !checkedData}
-          className="mb-8 ml-4 px-4 py-2 rounded h-15 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold transition disabled:opacity-60"
+          className={styles.submitBtn}
         >
           {loading ? "Checking..." : "Check on Amz"}
         </button>
 
         {loading && (
-          <div className="mb-8 text-lg font-semibold text-blue-500">
+          <div className={styles.heading} style={{ color: "#60a5fa" }}>
             Checking on Amazon...
           </div>
         )}
 
-        {error && <div className="text-red-500 mb-4">{error}</div>}
+        {error && <div className={styles.error}>{error}</div>}
 
         {agentResponse && (
-          <div className={`w-full max-w-2xl mt-6 p-4 rounded-xl shadow border
-            ${darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-900"}`}>
-            <div className="font-semibold mb-2">Agent Response:</div>
-            <div className="whitespace-pre-wrap">{agentResponse}</div>
+          <div className={styles.responseBox}>
+            <div className={styles.responseTitle}>Agent Response:</div>
+            <div className={styles.responseText}>{agentResponse}</div>
           </div>
         )}
 
         {checkedData && (
-          <div className="mt-6">
-            <h2 className="text-xl font-bold mb-4">Checked Products</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={styles.responseBox}>
+            <h2 className={styles.heading}>Checked Products</h2>
+            <div className={styles.productsGrid}>
               {flatProducts.slice(0, 10).map(({ upc, product }, idx) => (
-                <div
-                  key={upc + idx}
-                  className={`rounded-xl border shadow p-4 flex flex-col items-start ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-                    }`}
-                >
-                  <div className="font-semibold mb-1">
-                    UPC: <span className="font-mono">{upc}</span>
+                <div key={upc + idx} className={styles.productCard}>
+                  <div className={styles.productLabel}>
+                    UPC: <span className={styles.productMono}>{upc}</span>
                   </div>
                   <div>
-                    ASIN: <span className="font-mono">{product.productASIN}</span>
+                    ASIN: <span className={styles.productMono}>{product.productASIN}</span>
                   </div>
                   <div>
-                    Status: <span className="font-bold">{product.status}</span>
+                    Status: <span className={styles.productStatus}>{product.status}</span>
                   </div>
                   <a
                     href={`https://www.amazon.com/dp/${product.productASIN}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 text-blue-500 underline"
+                    className={styles.productLink}
                   >
                     View on Amazon
                   </a>
@@ -346,47 +307,46 @@ const CheckOnAmz: React.FC = () => {
             {flatProducts.length > 10 && (
               <button
                 onClick={() => setShowAll(true)}
-                className="mt-6 px-6 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                className={styles.progressBtn}
               >
                 Load More
               </button>
             )}
 
-            {/* Modal for all products */}
             {showAll && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center ">
-                <div className={`bg-${darkMode ? "gray-700" : "white"} text-${darkMode ? "white" : "black"} rounded-xl shadow-lg max-w-5xl w-full p-6 overflow-auto max-h-[90vh]`}>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold">All Checked Products</h3>
+              <div className={styles.modalOverlay}>
+                <div className={styles.modal}>
+                  <div className={styles.modalHeader}>
+                    <h3 className={styles.modalTitle}>All Checked Products</h3>
                     <button
                       onClick={() => setShowAll(false)}
-                      className="hover:text-red-500 text-2xl font-bold"
+                      className={styles.modalClose}
                     >
                       &times;
                     </button>
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full border border-gray-300 dark:border-gray-700">
+                  <div className={styles.modalTableWrap}>
+                    <table className={styles.modalTable}>
                       <thead>
                         <tr>
-                          <th className="px-3 py-2 border dark:border-gray-700">UPC</th>
-                          <th className="px-3 py-2 border dark:border-gray-700">ASIN</th>
-                          <th className="px-3 py-2 border dark:border-gray-700">Status</th>
-                          <th className="px-3 py-2 border dark:border-gray-700">Amazon Link</th>
+                          <th>UPC</th>
+                          <th>ASIN</th>
+                          <th>Status</th>
+                          <th>Amazon Link</th>
                         </tr>
                       </thead>
                       <tbody>
                         {flatProducts.map(({ upc, product }, idx) => (
                           <tr key={upc + idx}>
-                            <td className="px-3 py-2 border dark:border-gray-700 font-mono">{upc}</td>
-                            <td className="px-3 py-2 border dark:border-gray-700 font-mono">{product.productASIN}</td>
-                            <td className="px-3 py-2 border dark:border-gray-700">{product.status}</td>
-                            <td className="px-3 py-2 border dark:border-gray-700">
+                            <td className={styles.productMono}>{upc}</td>
+                            <td className={styles.productMono}>{product.productASIN}</td>
+                            <td>{product.status}</td>
+                            <td>
                               <a
                                 href={`https://www.amazon.com/dp/${product.productASIN}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-blue-500 underline"
+                                className={styles.productLink}
                               >
                                 View
                               </a>
@@ -398,7 +358,7 @@ const CheckOnAmz: React.FC = () => {
                   </div>
                   <button
                     onClick={() => setShowAll(false)}
-                    className="mt-6 px-6 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                    className={styles.progressBtn}
                   >
                     Close
                   </button>
@@ -407,15 +367,11 @@ const CheckOnAmz: React.FC = () => {
             )}
 
             {checkedData.skipped && checkedData.skipped.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold mb-2">Skipped UPCs</h3>
-                <div className="flex flex-wrap gap-2">
+              <div className={styles.skippedBox}>
+                <h3 className={styles.modalTitle}>Skipped UPCs</h3>
+                <div className={styles.skippedList}>
                   {checkedData.skipped.map((item, idx) => (
-                    <span
-                      key={item.productUPC + idx}
-                      className={`px-3 py-1 rounded-full text-sm ${darkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-gray-800"
-                        }`}
-                    >
+                    <span key={item.productUPC + idx} className={styles.skippedItem}>
                       {item.productUPC}
                     </span>
                   ))}
@@ -423,7 +379,7 @@ const CheckOnAmz: React.FC = () => {
               </div>
             )}
 
-            <div className="mt-6 text-sm text-gray-400">
+            <div className={styles.checkedAt}>
               Checked at: {new Date(checkedData.timestamp).toLocaleString()}
             </div>
           </div>
@@ -432,14 +388,14 @@ const CheckOnAmz: React.FC = () => {
 
       {/* Modal for selecting search key */}
       {showSearchKeyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-lg max-w-md w-full p-6`}>
-            <h3 className="text-lg font-bold mb-4">Select Unit/Column for Amazon Check</h3>
-            <div className="mb-4">
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3 className={styles.modalTitle}>Select Unit/Column for Amazon Check</h3>
+            <div className={styles.modalSelectWrap}>
               <select
                 value={selectedKey}
                 onChange={e => setSelectedKey(e.target.value)}
-                className="w-full px-3 py-2 rounded border dark:bg-gray-800 dark:border-gray-700"
+                className={styles.modalSelect}
               >
                 <option value="">Select column...</option>
                 {searchKeys.map(key => (
@@ -448,14 +404,14 @@ const CheckOnAmz: React.FC = () => {
               </select>
             </div>
             <button
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded shadow mr-2"
+              className={styles.modalSubmit}
               disabled={!selectedKey || sendingSearchKey}
               onClick={handleSendSearchKey}
             >
               {sendingSearchKey ? "Sending..." : "Submit"}
             </button>
             <button
-              className="ml-2 px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold"
+              className={styles.modalCancel}
               onClick={() => setShowSearchKeyModal(false)}
             >
               Cancel

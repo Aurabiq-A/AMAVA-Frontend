@@ -1,31 +1,28 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import ScrapedView from "./pages/ScrapedView";
-import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import ScreenshotListener from "./pages/Progress";
-import "./App.css"; 
+import "./App.css";
 import CheckOnAmz from "./pages/un_gated";
-// Ensure you have your CSS file imported
+import styles from "./pages/Home.module.css"; // Use your CSS module
 
 function AppContent() {
   const { darkMode } = useTheme();
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 flex
-      ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
+    <div className={`${styles.appRoot} ${darkMode ? styles.dark : styles.light}`}>
       <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <Header />
-        <main className="flex-1 px-4 py-6 pt-16">
+      <div className={styles.mainContent}>
+        <main className={styles.mainArea}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/scraped" element={<ScrapedView />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/progress-s" element={<ScreenshotListener />} />
-            <Route path="/ungated" element={<CheckOnAmz/>} />
+            <Route path="/ungated" element={<CheckOnAmz />} />
             {/* Add more routes as needed */}
           </Routes>
         </main>
