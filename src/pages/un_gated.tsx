@@ -11,7 +11,7 @@ type CheckedData = {
   results: Record<string, ProductResult[]>;
   skipped: { productUPC: string }[];
   timestamp: string;
-};
+}
 
 const CheckOnAmz: React.FC = () => {
   const { darkMode } = useTheme();
@@ -40,15 +40,15 @@ const CheckOnAmz: React.FC = () => {
   }
 
   // Helper to get all possible keys from checkedData
-  function getAllPossibleKeys(): string[] {
-    if (!checkedData) return [];
-    const all = Object.values(checkedData.results).flat();
-    const keys = new Set<string>();
-    all.forEach((item) => {
-      Object.keys(item).forEach((k) => keys.add(k));
-    });
-    return Array.from(keys);
-  }
+  // function getAllPossibleKeys(): string[] {
+  //   if (!checkedData) return [];
+  //   const all = Object.values(checkedData.results).flat();
+  //   const keys = new Set<string>();
+  //   all.forEach((item) => {
+  //     Object.keys(item).forEach((k) => keys.add(k));
+  //   });
+  //   return Array.from(keys);
+  // }
 
   // When user clicks "Check on Amz"
   const handleCheckOnAmzClick = async () => {
