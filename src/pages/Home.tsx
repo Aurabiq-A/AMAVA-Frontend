@@ -4,6 +4,7 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
+import styles from "./Home.module.css";
 
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
@@ -134,19 +135,15 @@ const Home: React.FC = () => {
 
   return (
     <div
-      className={`flex flex-col items-center justify-center min-h-screen px-4 pt-32
-        ${darkMode ? "bg-gray-800 text-white" : "bg-gray-50 text-gray-900"}`}
+      className={`${styles.container} ${darkMode ? styles.dark : styles.light}`}
     >
-      <h2 className="text-2xl font-semibold text-center mb-8 tracking-tight">
-        Product Search
-      </h2>
+      <h2 className={styles.heading}>Product Search</h2>
       <form
         onSubmit={handleSubmit}
-        className={`w-full max-w-3xl flex items-center shadow-md border rounded-full px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-500
-          ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
+        className={`${styles.form} ${darkMode ? styles.formDark : styles.formLight}`}
       >
         <MagnifyingGlassIcon
-          className={`h-5 w-5 mr-3 ${darkMode ? "text-gray-400" : "text-gray-500"}`}
+          className={`${styles.icon} ${darkMode ? styles.iconDark : styles.iconLight}`}
         />
         <input
           type="text"
@@ -154,8 +151,7 @@ const Home: React.FC = () => {
           value={categoryUrl}
           onChange={(e) => setCategoryUrl(e.target.value)}
           placeholder="Category Url"
-          className={`flex-1 bg-transparent outline-none text-lg placeholder-gray-400
-            ${darkMode ? "text-white" : "text-gray-700"}`}
+          className={`${styles.input} ${darkMode ? styles.inputDark : styles.inputLight}`}
           required
         />
         <input
@@ -165,22 +161,14 @@ const Home: React.FC = () => {
           value={pages}
           onChange={(e) => setPages(e.target.value)}
           placeholder="Pages (How many pages)"
-          className={`w-40 ml-3 rounded-md px-3 py-2 border outline-none transition placeholder-gray-400
-            ${darkMode
-              ? "bg-gray-900 border-gray-700 text-white"
-              : "bg-gray-100 border-gray-300 text-gray-900"
-            }`}
+          className={`${styles.pagesInput} ${darkMode ? styles.inputDark : styles.inputLight}`}
           required
         />
         <select
           id="mode"
           value={mode}
           onChange={(e) => setMode(e.target.value)}
-          className={`ml-3 rounded-md px-3 py-2 border outline-none transition
-            ${darkMode
-              ? "bg-gray-900 border-gray-700 text-white"
-              : "bg-gray-100 border-gray-300 text-gray-900"
-            }`}
+          className={`${styles.select} ${darkMode ? styles.inputDark : styles.inputLight}`}
         >
           <option value="scratch">Start from Scratch</option>
           <option value="resume">Resume From Last Session 💫</option>
@@ -188,28 +176,26 @@ const Home: React.FC = () => {
         <button
           type="submit"
           disabled={loading || !categoryUrl.trim() || !pages.trim()}
-          className={`ml-3 font-semibold rounded-full px-5 py-2 text-sm transition-colors
-            ${loading || !categoryUrl.trim() || !pages.trim()
-              ? "bg-emerald-400 cursor-not-allowed text-white"
-              : "bg-emerald-600 hover:bg-emerald-700 text-white"
+          className={`${styles.submitBtn} ${loading || !categoryUrl.trim() || !pages.trim()
+            ? styles.submitBtnDisabled
+            : styles.submitBtnActive
             }`}
         >
           {loading ? (
-            <ArrowPathIcon className="h-5 w-5 animate-spin mx-auto" />
+            <ArrowPathIcon className={styles.loadingIcon} />
           ) : (
             "Search"
           )}
         </button>
       </form>
 
-      {/* Or and Upload Excel */}
-      <div className="flex items-center my-6 w-full max-w-3xl">
-        <div className="flex-1 border-t border-gray-300 dark:border-gray-700"></div>
-        <span className="mx-4 text-lg font-semibold text-gray-500 dark:text-gray-400">Or</span>
-        <div className="flex-1 border-t border-gray-300 dark:border-gray-700"></div>
+      <div className={styles.orDivider}>
+        <div className={styles.dividerLine}></div>
+        <span className={styles.orText}>Or</span>
+        <div className={styles.dividerLine}></div>
       </div>
       <button
-        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow mb-4"
+        className={styles.uploadBtn}
         onClick={() => fileInputRef.current?.click()}
       >
         Upload Excel File
@@ -219,19 +205,18 @@ const Home: React.FC = () => {
         accept=".xlsx,.xls"
         ref={fileInputRef}
         onChange={handleExcelUpload}
-        className="hidden"
+        className={styles.hiddenInput}
       />
 
-      {/* Modal for selecting key */}
       {showExcelModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-lg max-w-md w-full p-6`}>
-            <h3 className="text-lg font-bold mb-4">Select Column for Amazon Check</h3>
-            <div className="mb-4">
+        <div className={styles.modalOverlay}>
+          <div className={`${styles.modal} ${darkMode ? styles.modalDark : styles.modalLight}`}>
+            <h3 className={styles.modalTitle}>Select Column for Amazon Check</h3>
+            <div className={styles.modalSelectWrap}>
               <select
                 value={selectedKey}
                 onChange={e => setSelectedKey(e.target.value)}
-                className="w-full px-3 py-2 rounded border dark:bg-gray-800 dark:border-gray-700"
+                className={styles.modalSelect}
               >
                 <option value="">Select column...</option>
                 {excelKeys.map(key => (
@@ -240,14 +225,14 @@ const Home: React.FC = () => {
               </select>
             </div>
             <button
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded shadow mr-2"
+              className={styles.modalSubmit}
               disabled={!selectedKey || uploading}
               onClick={handleExcelSubmit}
             >
               {uploading ? "Uploading..." : "Submit"}
             </button>
             <button
-              className="ml-2 px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold"
+              className={styles.modalCancel}
               onClick={() => setShowExcelModal(false)}
             >
               Cancel
@@ -257,11 +242,10 @@ const Home: React.FC = () => {
       )}
 
       {agentResponse && (
-        <div className={`w-full max-w-2xl mt-6 p-4 rounded-xl shadow border
-          ${darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-900"}`}>
-          <div className="font-semibold mb-2">Agent Response:</div>
-          <div className="whitespace-pre-wrap">{agentResponse}</div>
-          <button className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors mb-4'
+        <div className={`${styles.responseBox} ${darkMode ? styles.responseBoxDark : styles.responseBoxLight}`}>
+          <div className={styles.responseTitle}>Agent Response:</div>
+          <div className={styles.responseText}>{agentResponse}</div>
+          <button className={styles.progressBtn}
             onClick={() => Navigate("/progress")}>See Progress</button>
         </div>
       )}
