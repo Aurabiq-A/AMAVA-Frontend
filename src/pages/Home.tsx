@@ -2,9 +2,10 @@ import React, { useState, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../context/ThemeContext";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import styles from "./Home.module.css";
+import ScreenshotListener from "./Progress";
 
 const Home: React.FC = () => {
   const { darkMode } = useTheme();
@@ -18,7 +19,7 @@ const Home: React.FC = () => {
   const [showExcelModal, setShowExcelModal] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string>("");
   const [uploading, setUploading] = useState(false);
-  const Navigate = useNavigate();
+  // const Navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function extractMainResponse(json: any): string {
@@ -110,7 +111,9 @@ const Home: React.FC = () => {
     // Change the key name for search/check on amazon
     const updatedData = excelData.map((row) => ({
       ...row,
-      search_key: row[selectedKey], // Add a new key 'search_key' with the selected value
+      search_key: row[selectedKey],
+      "unit": selectedKey,
+
     }));
 
     try {
@@ -300,10 +303,8 @@ const Home: React.FC = () => {
 
       {agentResponse && (
         <div className={`${styles.responseBox} ${darkMode ? styles.responseBoxDark : styles.responseBoxLight}`}>
-          <div className={styles.responseTitle}>Agent Response:</div>
           <div className={styles.responseText}>{agentResponse}</div>
-          <button className={styles.progressBtn}
-            onClick={() => Navigate("/progress")}>See Progress</button>
+          <ScreenshotListener />
         </div>
       )}
     </div>

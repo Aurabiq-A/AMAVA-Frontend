@@ -193,6 +193,9 @@ const CheckOnAmz: React.FC = () => {
     };
 
     fetchCheckedData();
+    // run fetchCheckedData every 10 minutes
+    const interval = setInterval(fetchCheckedData, 600000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleDownload = async () => {
