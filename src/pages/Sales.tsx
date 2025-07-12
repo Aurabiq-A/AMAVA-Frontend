@@ -42,8 +42,7 @@ function SalesTable() {
   }, []);
 
   return (
-    <div className="container">
-      <h1 className="text-3xl font-bold text-center mb-6">📦 Today’s Amazon Sales</h1>
+    <div className={`${styles.container} ${darkMode ? styles.dark : styles.light}`}>
 
       {loading && (
         <p className="text-center text-gray-500 animate-pulse">Loading sales data...</p>
@@ -57,9 +56,15 @@ function SalesTable() {
         <p className="text-center text-gray-500">No sales found for today.</p>
       )}
 
+
       {!loading && sales.length > 0 && (
         <div className={`${styles.container} ${darkMode ? styles.dark : styles.light}`}>
+          <h1 className="text-3xl font-bold text-center mb-6">📦 Today’s Amazon Sales</h1>
+
           <div className={styles.responseBox}>
+            <div className="text-right font-semibold mt-4">
+              Total Sales: {sales.reduce((sum, s) => sum + s.item_price, 0).toFixed(2)} {sales[0]?.currency || ""}
+            </div>
             {sales.map((sale) => (
               <div
                 key={sale.id}
@@ -85,9 +90,6 @@ function SalesTable() {
               </div>
             ))}
 
-            <div className="text-right font-semibold text-gray-700 mt-4">
-              Total Sales: {sales.reduce((sum, s) => sum + s.item_price, 0).toFixed(2)} {sales[0]?.currency || ""}
-            </div>
           </div>
         </div>
       )}

@@ -29,7 +29,7 @@ const Header: React.FC = () => {
         <button onClick={() => navigate("/chat")} className={`${styles.headerBtn} ${darkMode ? styles.headerBtnDark : styles.headerBtnLight}`}>
           💬 Chat
         </button>
-        <button onClick={() => navigate("/progress-s")} className={`${styles.headerBtn} ${darkMode ? styles.headerBtnDark : styles.headerBtnLight}`}>
+        <button onClick={() => navigate("/progress")} className={`${styles.headerBtn} ${darkMode ? styles.headerBtnDark : styles.headerBtnLight}`}>
           📊 Scrapping Progress
         </button>
         <button onClick={() => navigate("/sales")} className={`${styles.headerBtn} ${darkMode ? styles.headerBtnDark : styles.headerBtnLight}`}>

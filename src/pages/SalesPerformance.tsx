@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import {
-  LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer
+  LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { format } from "date-fns";
+
+import "react-datepicker/dist/react-datepicker.css";
+import "../datepicker-fix.css"; // see fix at the bottom
+import { useTheme } from "../context/ThemeContext";
+import styles from "./Home.module.css";
 
 type SalesDay = {
   interval: string;
@@ -22,26 +27,22 @@ type SalesDay = {
 };
 
 export default function SalesMetricsPage() {
+  const { darkMode } = useTheme();
   const [metrics, setMetrics] = useState<SalesDay[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<Date>(new Date(Date.now() - 6 * 86400000));
-  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [startDate, setStartDate] = useState(new Date(Date.now() - 6 * 86400000));
+  const [endDate, setEndDate] = useState(new Date());
 
-  useEffect(() => {
-    fetchMetrics();
-  }, [startDate, endDate]);
-
-  const fetchMetrics = async () => {
+  const fetchMetrics = async (from: Date, to: Date) => {
     setLoading(true);
     try {
-      const from = startDate.toISOString().split("T")[0];
-      const to = endDate.toISOString().split("T")[0];
-
       const res = await axios.get("http://localhost:51483/sales-metrics", {
-        params: { start_date: from, end_date: to },
+        params: {
+          start_date: from.toISOString().split("T")[0],
+          end_date: to.toISOString().split("T")[0],
+        },
       });
-
       setMetrics(res.data.data || []);
     } catch {
       setError("❌ Failed to fetch sales metrics.");
@@ -49,6 +50,10 @@ export default function SalesMetricsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchMetrics(startDate, endDate);
+  }, [startDate, endDate]);
 
   const chartData = metrics.map((day) => {
     const [start] = day.interval.split("--");
@@ -63,17 +68,27 @@ export default function SalesMetricsPage() {
   const currency = metrics[0]?.totalSales?.currencyCode || "USD";
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 p-6">
+    <div className={`${styles.container} ${darkMode ? styles.dark : styles.light}`}>
+      <div className={styles.responseBox}>
+
       <h1 className="text-3xl font-bold mb-4 text-center">📊 Amazon Sales Metrics</h1>
 
       <div className="flex flex-wrap justify-center gap-4 mb-6">
         <div>
-          <label className="font-semibold">From: </label>
-          <DatePicker selected={startDate} onChange={(date) => date && setStartDate(date)} />
+          <label className="font-semibold block mb-1">From:</label>
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => date && setStartDate(date)}
+            className="bg-white border border-gray-300 px-3 py-1 rounded shadow-sm text-sm text-gray-800"
+            />
         </div>
         <div>
-          <label className="font-semibold">To: </label>
-          <DatePicker selected={endDate} onChange={(date) => date && setEndDate(date)} />
+          <label className="font-semibold block mb-1">To:</label>
+          <DatePicker
+            selected={endDate}
+            onChange={(date) => date && setEndDate(date)}
+            className="bg-white border border-gray-300 px-3 py-1 rounded shadow-sm text-sm text-gray-800"
+            />
         </div>
       </div>
 
@@ -81,12 +96,12 @@ export default function SalesMetricsPage() {
       {error && <p className="text-center text-red-600">{error}</p>}
 
       {!loading && chartData.length > 0 && (
-        <div className="mb-10">
-          <h2 className="text-xl font-semibold mb-2 text-center">📈 Revenue Trend</h2>
+        <div className={styles.responseBox}>
+          <h2 className="text-xl font-semibold mb-2 text-center text-black">📈 Revenue Trend</h2>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} />
-              <CartesianGrid stroke="#e5e7eb" strokeDasharray="5 5" />
+            <LineChart data={chartData}>
+              <Line type="monotone" dataKey="revenue" stroke="#5a914fff" strokeWidth={5} />
+              <CartesianGrid stroke="#6b6c6dff" strokeDasharray="5 5" />
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
@@ -94,14 +109,22 @@ export default function SalesMetricsPage() {
           </ResponsiveContainer>
         </div>
       )}
-
+      
+      {!loading && metrics.length > 0 && (
+        <div className={`${styles.responseBox} mt-8 text-right text-lg font-semibold`}>
+          🧮 Total Units: {totalUnits} | 💰 Revenue: {currency} {totalRevenue.toFixed(2)}
+        </div>
+      )}
       <div className="grid gap-6 md:grid-cols-2">
         {metrics.map((day, index) => {
           const [start] = day.interval.split("--");
           const dateStr = new Date(start).toLocaleDateString();
-
+          
           return (
-            <div key={index} className="border rounded-lg p-4 bg-gray-50 shadow-sm hover:shadow-md transition">
+            <div
+            key={index}
+            className={`${styles.responseBox} transition`}
+            >
               <h2 className="text-xl font-semibold mb-2">📅 {dateStr}</h2>
               <p><strong>Units Sold:</strong> {day.unitCount}</p>
               <p><strong>Orders:</strong> {day.orderCount}</p>
@@ -118,12 +141,7 @@ export default function SalesMetricsPage() {
           );
         })}
       </div>
-
-      {!loading && metrics.length > 0 && (
-        <div className="mt-8 text-right text-lg font-semibold">
-          🧮 Total Units: {totalUnits} | 💰 Revenue: {currency} {totalRevenue.toFixed(2)}
-        </div>
-      )}
+      </div>
     </div>
   );
 }

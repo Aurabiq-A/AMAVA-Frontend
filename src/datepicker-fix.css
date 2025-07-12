@@ -1,0 +1,20 @@
+.react-datepicker {
+  background-color: white !important;
+  color: black;
+  border: 1px solid #d1d5db;
+  z-index: 50;
+}
+
+.react-datepicker__header {
+  background-color: #f3f4f6 !important;
+}
+
+.react-datepicker__day--selected {
+  background-color: #3b82f6 !important;
+  color: white;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #3b82f6 !important;
+  color: white;
+}
