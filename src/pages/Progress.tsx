@@ -9,7 +9,7 @@ const ScreenshotListener: React.FC = () => {
     // Poll the endpoint every 2 seconds for a new screenshot
     const fetchScreenshot = async () => {
       try {
-        const res = await fetch("https://electric-mistakenly-rat.ngrok-free.app/get-screenshot", {
+        const res = await fetch("http://localhost:51483/get-screenshot", {
         method: "GET",
         headers: { "ngrok-skip-browser-warning": "true", },
       });

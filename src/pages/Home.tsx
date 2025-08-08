@@ -43,7 +43,7 @@ const Home: React.FC = () => {
 
     // Step 1: Create session (proxy to 51483)
     await fetch(
-      `https://electric-mistakenly-rat.ngrok-free.app/apps/${appName}/users/${userId}/sessions/${sessionId}`,
+      `http://localhost:51483/apps/${appName}/users/${userId}/sessions/${sessionId}`,
       {
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
@@ -55,7 +55,7 @@ const Home: React.FC = () => {
     const promptText = `Hey scrape me this wholesale/distributor's website URL: ${categoryUrl} and Start from zero = ${mode === "scratch" ? "True" : "False"} and pages = ${pages} (I have reviewed everything jst start scraping)`;
 
     try {
-      const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+      const response = await fetch("http://localhost:51483/run", {
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -117,7 +117,7 @@ const Home: React.FC = () => {
     }));
 
     try {
-      await fetch("https://electric-mistakenly-rat.ngrok-free.app/api/scraped_dataresults", {
+      await fetch("http://localhost:51483/api/scraped_dataresults", {
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({ data: updatedData }),

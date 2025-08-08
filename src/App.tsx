@@ -10,6 +10,7 @@ import CheckOnAmz from "./pages/un_gated";
 import styles from "./pages/Home.module.css"; // Use your CSS module
 import SalesTable from "./pages/Sales";
 import SalesMetricsPage from "./pages/SalesPerformance";
+import FBAProfitCalculatorPage from "./pages/ReveneCalculator";
 function AppContent() {
   const { darkMode } = useTheme();
 
@@ -26,6 +27,7 @@ function AppContent() {
             <Route path="/ungated" element={<CheckOnAmz />} />
             <Route path="/sales" element={<SalesTable />} />
             <Route path="/sales-performance" element={<SalesMetricsPage />} />
+            <Route path="/fba-profit-calculator" element={<FBAProfitCalculatorPage />} />
             {/* Add more routes as needed */}
           </Routes>
         </main>

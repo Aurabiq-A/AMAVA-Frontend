@@ -43,7 +43,7 @@ const CheckOnAmz: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data", {
+      const res = await fetch("http://localhost:51483/api/get_scraped_data", {
         method: "GET",
         headers: { "ngrok-skip-browser-warning": "true" },
       });
@@ -71,7 +71,7 @@ const CheckOnAmz: React.FC = () => {
     setSendingSearchKey(true);
 
     try {
-      const res = await fetch("https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data", {
+      const res = await fetch("http://localhost:51483/api/get_scraped_data", {
         method: "GET",
         headers: { "ngrok-skip-browser-warning": "true" },
       });
@@ -82,7 +82,7 @@ const CheckOnAmz: React.FC = () => {
         unitList = parsed.map((item: any) => item[selectedKey]).filter((v: any) => !!v);
       }
 
-      await fetch("https://electric-mistakenly-rat.ngrok-free.app/search-key", {
+      await fetch("http://localhost:51483/search-key", {
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({ search_key: selectedKey, values: unitList }),
@@ -109,7 +109,7 @@ const CheckOnAmz: React.FC = () => {
     const promptText = `Hello from Server scraping is done wholesaler's website now start checking on Amazon`;
 
     try {
-      let response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+      let response = await fetch("http://localhost:51483/run", {
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -125,14 +125,14 @@ const CheckOnAmz: React.FC = () => {
       const text = await response.text();
       if (text.includes('"detail":"Session not found"')) {
         await fetch(
-          `https://electric-mistakenly-rat.ngrok-free.app/apps/${appName}/users/${userId}/sessions/${sessionId}`,
+          `http://localhost:51483/apps/${appName}/users/${userId}/sessions/${sessionId}`,
           {
             method: "POST",
             headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
             body: JSON.stringify({ state: { key1: "value1", key2: 42 } }),
           }
         );
-        response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+        response = await fetch("http://localhost:51483/run", {
           method: "POST",
           headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -172,7 +172,7 @@ const CheckOnAmz: React.FC = () => {
       setCheckedData(null);
       setAgentResponse(null);
       try {
-        const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/checkeddata", {
+        const response = await fetch("http://localhost:51483/checkeddata", {
           method: "GET",
           headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         });
@@ -202,7 +202,7 @@ const CheckOnAmz: React.FC = () => {
     setDownloading(true);
     setError(null);
     try {
-      const response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/exceldata", {
+      const response = await fetch("http://localhost:51483/exceldata", {
         method: "GET",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
       });

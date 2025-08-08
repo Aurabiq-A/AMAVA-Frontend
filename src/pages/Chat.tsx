@@ -26,9 +26,10 @@ const Chat: React.FC = () => {
     const sessionId = "st";
     const appName = "AMAVAGENT";
     const promptText = input.trim();
+    
 
     try {
-      let response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+      let response = await fetch("http://localhost:51483/run", {
         method: "POST",
         headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -44,14 +45,14 @@ const Chat: React.FC = () => {
       const text = await response.clone().text();
       if (text.includes('"detail":"Session not found"')) {
         await fetch(
-          `https://electric-mistakenly-rat.ngrok-free.app/apps/${appName}/users/${userId}/sessions/${sessionId}`,
+          `http://localhost:51483/apps/${appName}/users/${userId}/sessions/${sessionId}`,
           {
             method: "POST",
             headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
             body: JSON.stringify({ state: { key1: "value1", key2: 42 } }),
           }
         );
-        response = await fetch("https://electric-mistakenly-rat.ngrok-free.app/run", {
+        response = await fetch("http://localhost:51483/run", {
           method: "POST",
           headers: { "ngrok-skip-browser-warning": "true", "Content-Type": "application/json" },
           body: JSON.stringify({

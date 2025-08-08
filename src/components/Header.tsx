@@ -26,6 +26,9 @@ const Header: React.FC = () => {
         <button onClick={() => navigate("/scraped")} className={`${styles.headerBtn} ${darkMode ? styles.headerBtnDark : styles.headerBtnLight}`}>
           🏆 Winning Products
         </button>
+        <button onClick={() => navigate("/fba-profit-calculator")} className={`${styles.headerBtn} ${darkMode ? styles.headerBtnDark : styles.headerBtnLight}`}>
+          🎫 Revenue Calc
+        </button>
         <button onClick={() => navigate("/chat")} className={`${styles.headerBtn} ${darkMode ? styles.headerBtnDark : styles.headerBtnLight}`}>
           💬 Chat
         </button>

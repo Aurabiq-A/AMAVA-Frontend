@@ -11,7 +11,7 @@ function ScrapedView() {
   const { darkMode } = useTheme();
 
   useEffect(() => {
-    fetch('https://electric-mistakenly-rat.ngrok-free.app/api/get_scraped_data', {
+    fetch('http://localhost:51483/api/get_scraped_data', {
       method: "GET",
       headers: { "ngrok-skip-browser-warning": "true" },
     })
