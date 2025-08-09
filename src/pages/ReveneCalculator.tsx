@@ -24,7 +24,7 @@ const FBAProfitCalculatorPage = () => {
             const res = await fetch("http://localhost:51483/fba-profit-calculator", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ asin: "B00ZZ1G3I2", cost: 8.5 })
+                body: JSON.stringify({ asin, cost })
             });
 
             if (!res.ok) {
@@ -38,6 +38,8 @@ const FBAProfitCalculatorPage = () => {
             setError(err.message || "Something went wrong.");
         } finally {
             setLoading(false);
+         
+    
         }
     };
 
